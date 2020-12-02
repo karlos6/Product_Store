@@ -8,11 +8,17 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final formKey = GlobalKey<FormState>();
   String product;
-  String cost;
+  String netCost;
+  String grossCost;
+  String quantity;
 
   void _accion(BuildContext context) {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
+      print(product);
+      print(netCost);
+      print(grossCost);
+      print(quantity);
     }
   }
 
@@ -39,22 +45,38 @@ class _RegisterState extends State<Register> {
               child: Column(
                 children: [
                   TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Producto',
-                      icon: new Icon(Icons.receipt),
-                    ),
-                    onSaved: (value) => product = value,
-                    validator: (value) {
-                      String campo = '';
-                      if (value.isEmpty) {
-                        campo = 'Campo vacio';
-                      }
-                      return campo;
-                    },
-                  ),
-                  TexNumber('Costo Unitario'),
-                  TexNumber('Valor a vender'),
-                  TexNumber('Cantidad'),
+                      decoration: InputDecoration(
+                        labelText: 'Producto',
+                        icon: new Icon(Icons.receipt),
+                      ),
+                      onSaved: (value) => product = value,
+                      validator: (value) =>
+                          value.isEmpty ? 'Campo Vacio' : null),
+                  TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          labelText: 'Costo Unitario',
+                          icon: new Icon(Icons.monetization_on)),
+                      onSaved: (value) => netCost = value,
+                      // ignore: missing_return
+                      validator: (value) =>
+                          value.isEmpty ? 'Campo Vacio' : null),
+                  TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          labelText: 'Valor a vender',
+                          icon: new Icon(Icons.monetization_on)),
+                      onSaved: (value) => grossCost = value,
+                      validator: (value) =>
+                          value.isEmpty ? 'Campo Vacio' : null),
+                  TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          labelText: 'Cantidad',
+                          icon: new Icon(Icons.monetization_on)),
+                      onSaved: (value) => quantity = value,
+                      validator: (value) =>
+                          value.isEmpty ? 'Campo Vacio' : null)
                 ],
               ),
             ),
@@ -71,29 +93,6 @@ class _RegisterState extends State<Register> {
               ),
             ],
           );
-        });
-  }
-}
-
-class TexNumber extends StatelessWidget {
-  String label;
-  String cost;
-
-  TexNumber(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-            labelText: this.label, icon: new Icon(Icons.monetization_on)),
-        onSaved: (value) => this.cost = value,
-        validator: (value) {
-          String campo = '';
-          if (value.isEmpty) {
-            campo = 'Campo vacio';
-          }
-          return campo;
         });
   }
 }
