@@ -9,17 +9,17 @@ class Product {
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       'id': id,
-      'nombre': nombre,
-      'valorNeto': valorNeto,
-      'valorBruto': valorBruto
+      'name': nombre,
+      'netCost': valorNeto,
+      'grossCost': valorBruto
     };
     return map;
   }
 
   Product.fromMap(Map<String, dynamic> map) {
     id = map['id'];
-    nombre = map['nombre'];
-    valorNeto = map['valorNeto'];
-    valorBruto = map['valorBruto'];
+    nombre = map['name'];
+    valorNeto = map['netCost'];
+    valorBruto = map['grossCost'];
   }
 }

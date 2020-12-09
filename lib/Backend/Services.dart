@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'dart:io' as io;
 import 'package:sqflite/sqflite.dart';
 import 'Models/Product.dart';
 
@@ -23,7 +23,7 @@ class Services {
   } // retorna la DataBase o llama la una funcion para crearla.
 
   initDB() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, DBname);
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
