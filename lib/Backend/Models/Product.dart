@@ -3,8 +3,14 @@ class Product {
   String nombre;
   int valorNeto;
   int valorBruto;
+  int cantidad;
 
-  Product({this.id, this.nombre, this.valorNeto, this.valorBruto});
+  Product({
+    this.id,
+    this.nombre,
+    this.valorNeto,
+    this.valorBruto,
+  });
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -16,10 +22,11 @@ class Product {
     return map;
   }
 
-  Product.fromMap(Map<String, dynamic> map) {
+  Product.fromMap(Map<String, dynamic> map, int q) {
     id = map['id'];
     nombre = map['name'];
     valorNeto = map['netCost'];
     valorBruto = map['grossCost'];
+    cantidad = q;
   }
 }
