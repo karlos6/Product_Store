@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:product_store/Backend/Services.dart';
 import 'package:product_store/Backend/Models/Product.dart';
-import 'package:product_store/Pages/ListWidgets.dart';
+import 'package:product_store/Pages/RegisterProducts/CardComponent.dart';
+import 'package:provider/provider.dart';
 
-class Register extends StatefulWidget {
-  @override
-  _RegisterState createState() => _RegisterState();
-}
-
-class _RegisterState extends State<Register> {
-  var dataBase;
-
-  Future<List<Product>> products;
-
+class Register extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
   String product;
   String netCost;
@@ -20,35 +12,26 @@ class _RegisterState extends State<Register> {
   String quantity;
   int userID;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    dataBase = Services();
-    refreshList();
-  }
-
-  refreshList() {
-    setState(() {
-      products = dataBase.getProducts();
-    });
-  }
-
   void _accion(BuildContext context) {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       Product pro = Product(
           id: null,
-          nombre: product,
+          nombre: product.toUpperCase(),
           valorBruto: int.parse(grossCost),
           valorNeto: int.parse(netCost));
-      dataBase.save(pro);
-      refreshList();
+
+      final dataB = Provider.of<Services>(context, listen: false);
+      dataB.save(pro, int.parse(quantity));
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final dataB = Provider.of<Services>(context);
+    Future<List<Product>> products = dataB.getProducts();
+
     return new Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -59,33 +42,37 @@ class _RegisterState extends State<Register> {
         body: FutureBuilder(
           future: products,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.data == null || snapshot.data.length == 0) {
+              return Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      'NO DATA FOUND',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                    )),
+              );
+            } else if (snapshot.data != null) {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, posicion) {
                   return Padding(
                     padding: EdgeInsets.only(right: 30, left: 30, top: 5),
-                    child: MyListCard(
+                    child: MyCard(
                         snapshot.data[posicion].nombre,
                         snapshot.data[posicion].valorNeto.toString(),
-                        snapshot.data[posicion].valorBruto.toString()),
+                        snapshot.data[posicion].valorBruto.toString(),
+                        snapshot.data[posicion].id,
+                        snapshot.data[posicion].cantidad.toString()),
                   );
                 },
               );
             }
-            if (snapshot.data == null || snapshot.data.length == 0) {
-              return Text('NO DATA FOUND');
-            }
+
             return CircularProgressIndicator();
           },
         ));
-  }
-
-  listaDeCards(List<Product> pro) {
-    return pro
-        .map((e) => MyListCard(
-            e.nombre, e.valorNeto.toString(), e.valorBruto.toString()))
-        .toList();
   }
 
   _insertProduct(BuildContext context) {
@@ -97,6 +84,7 @@ class _RegisterState extends State<Register> {
             content: Form(
               key: formKey,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
                       decoration: InputDecoration(
@@ -112,7 +100,6 @@ class _RegisterState extends State<Register> {
                           labelText: 'Costo Unitario',
                           icon: new Icon(Icons.monetization_on)),
                       onSaved: (value) => netCost = value,
-                      // ignore: missing_return
                       validator: (value) =>
                           value.isEmpty ? 'Campo Vacio' : null),
                   TextFormField(
@@ -138,6 +125,8 @@ class _RegisterState extends State<Register> {
               TextButton(
                 child: Text('Cancelar'),
                 onPressed: () {
+                  final dataB = Provider.of<Services>(context, listen: false);
+                  dataB.quantityProduct(1);
                   Navigator.pop(context);
                 },
               ),
@@ -145,11 +134,10 @@ class _RegisterState extends State<Register> {
                 child: Text('Guardar'),
                 onPressed: () {
                   _accion(context);
-                  Navigator.pop(context);
-                  //refreshList();
                 },
               ),
             ],
+            elevation: 24.5,
           );
         });
   }
